@@ -17,25 +17,34 @@
 #                     em vez do diretório pessoal
 #   --link            cria links simbólicos para este repositório em vez de copiar
 #                     (um git pull aqui já atualiza as skills instaladas)
-#                     A cópia segue os links da skill: os schemas dos adaptadores
-#                     (../adapters/schemas) vão junto, na versão deste repositório.
+#   --schemas-ref REF tag, branch ou commit do repositório dos adaptadores de onde vêm
+#                     os schemas dos formatos de build (padrão: PANORAMA_ADAPTERS_REF ou main)
+#   --schemas-dir DIR copia os schemas de DIR (ex.: a pasta schemas/ de uma cópia local
+#                     dos adaptadores) em vez de baixar
 #   --uninstall       remove as skills indicadas dos formatos escolhidos
 #   --list            lista as skills disponíveis
 #   -h, --help        mostra esta ajuda
 #
 # Com os dois formatos, a skill é instalada em .agents/skills e .claude/skills/<skill>
 # vira um link para ela, para existir uma cópia só.
+#
+# As skills que usam os schemas dos formatos de build (SCHEMA_SKILLS) os recebem em
+# skills/<skill>/schemas/, baixados de github.com/panorama-graph/adapters (curl e tar).
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS_DIR="$REPO_DIR/skills"
+ADAPTERS_REPO="https://codeload.github.com/panorama-graph/adapters/tar.gz"
+SCHEMA_SKILLS=(panorama-graph-carga-manual)
 
 claude=false
 agents=false
 project=""
 link=false
 uninstall=false
+schemas_ref="${PANORAMA_ADAPTERS_REF:-main}"
+schemas_dir=""
 skills=()
 
 usage() { sed -n '2,/^$/{s/^# \{0,1\}//;p}' "${BASH_SOURCE[0]}"; }
@@ -54,6 +63,12 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || { echo "erro: --project precisa de um diretório" >&2; exit 1; }
       project="$2"; shift ;;
     --link) link=true ;;
+    --schemas-ref)
+      [[ $# -ge 2 ]] || { echo "erro: --schemas-ref precisa de uma ref" >&2; exit 1; }
+      schemas_ref="$2"; shift ;;
+    --schemas-dir)
+      [[ $# -ge 2 && -d "$2" ]] || { echo "erro: --schemas-dir precisa de um diretório que exista" >&2; exit 1; }
+      schemas_dir="$(cd "$2" && pwd)"; shift ;;
     --uninstall) uninstall=true ;;
     --list) available; exit 0 ;;
     -h|--help) usage; exit 0 ;;
@@ -140,6 +155,29 @@ place() {
   fi
 }
 
+# Põe em skills/<skill>/schemas/ os schemas dos adaptadores, baixados uma vez por instalação.
+schemas_cache=""
+fetch_schemas() {
+  local s="$1" dest="$SKILLS_DIR/$1/schemas"
+  [[ " ${SCHEMA_SKILLS[*]} " == *" $s "* ]] || return 0
+  if [[ -z "$schemas_cache" ]]; then
+    if [[ -n "$schemas_dir" ]]; then
+      schemas_cache="$schemas_dir"
+    else
+      schemas_tmp="$(mktemp -d)"
+      trap 'rm -rf "$schemas_tmp"' EXIT
+      curl -fsSL "$ADAPTERS_REPO/$schemas_ref" | tar xz -C "$schemas_tmp" \
+        || { echo "erro: não consegui baixar os schemas dos adaptadores ($schemas_ref); use --schemas-dir" >&2; exit 1; }
+      schemas_cache="$(echo "$schemas_tmp"/*/schemas)"
+      [[ -d "$schemas_cache" ]] || { echo "erro: $schemas_ref não tem a pasta schemas/" >&2; exit 1; }
+      echo "schemas:  panorama-graph/adapters@$schemas_ref"
+    fi
+  fi
+  rm -rf "$dest"
+  mkdir -p "$dest"
+  cp "$schemas_cache"/*.json "$dest/"
+}
+
 for s in "${skills[@]}"; do
   if $uninstall; then
     for target in $($agents && echo "$agents_dest/$s") $($claude && echo "$claude_dest/$s"); do
@@ -148,6 +186,7 @@ for s in "${skills[@]}"; do
     continue
   fi
 
+  fetch_schemas "$s"
   if $agents; then
     place "$s" "$agents_dest/$s"
     if $claude; then

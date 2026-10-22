@@ -1,0 +1,16 @@
+# A cada push e pull request: a sintaxe dos scripts e a instalação das skills, com os schemas baixados dos adaptadores.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash -n install.sh && for f in skills/*/scripts/*.sh; do bash -n "$f"; done
+      - run: ./install.sh --project "$RUNNER_TEMP" --claude --agents
+      - run: ls "$RUNNER_TEMP"/.agents/skills/panorama-graph-carga-manual/schemas/manifest.schema.json

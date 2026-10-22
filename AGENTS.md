@@ -1,10 +1,10 @@
-# agent-skills — Guia para agentes
+# skills — Guia para agentes
 
-Este arquivo diz **como trabalhar** no projeto. **O que cada skill faz** está no [README.md](README.md).
+Este arquivo diz **como trabalhar** no repositório. **O que cada skill faz** está no [README.md](README.md).
 
 ## Regras
 
-- **A skill segue o produto, e não o contrário.** O formato dos arquivos é o dos schemas em `../adapters/schemas/` (ligados em cada skill por link simbólico, nunca copiados) e as regras de tradução são as do `graph-publish`. Mudou um formato, um tradutor, uma receita de chave ou a versão do plugin? Atualize as referências da skill, os exemplos e o init script na mesma entrega.
+- **A skill segue o produto, e não o contrário.** O formato dos arquivos é o dos schemas em `schemas/` do [adapters](https://github.com/panorama-graph/adapters) (baixados pelo `install.sh` na instalação, nunca copiados para cá) e as regras de tradução são as do `graph-publish`. Mudou um formato, um tradutor, uma receita de chave ou a versão do plugin? Atualize as referências da skill, os exemplos e o init script em seguida.
 - **Mesmas fontes e escopos dos adaptadores reais.** A carga gerada pela skill nunca usa fonte `manual`, `seed` ou `agente`: ela precisa ser substituída, sem limpeza, pelo primeiro envio do adaptador do mesmo assunto.
 - **Repositórios só de leitura.** Nenhuma instrução manda escrever, commitar ou instalar algo no projeto explorado. A exceção é o `build/` do Gradle, ignorado pelo git, pelo init script.
 - **Exemplos neutros.** Nada da organização de exemplo (ACME Bank) nas skills: os exemplos usam `example.com` e uma loja fictícia.
@@ -16,14 +16,14 @@ Este arquivo diz **como trabalhar** no projeto. **O que cada skill faz** está n
 |---|---|
 | `SKILL.md` | Frontmatter (`name` igual à pasta, `description` do que faz e de quando usar) e o roteiro: regras, entradas, saída e fases |
 | `referencias/` | O que o agente lê quando precisa: onde procurar cada fato (`descoberta.md`), os formatos (`formatos.md`), a organização e as chaves (`organizacao.md`) |
-| `schemas` | Link para `../../../adapters/schemas` |
+| `schemas/` | Os schemas dos formatos de build, baixados pelo `install.sh` para as skills de `SCHEMA_SKILLS` (fora do git) |
 | `modelos/` | Arquivos que o agente usa como estão (o init script do Gradle) |
 | `scripts/` | O que o agente roda (`importar.sh`) |
 | `exemplos/` | Uma carga completa, neutra, que passa no dry-run |
 
 ## Testes
 
-- `./install.sh --project <pasta temporária> --claude --agents`: a cópia tem `SKILL.md`, as referências e os schemas como arquivos (não como links).
-- `importar.sh --dry-run` sobre `exemplos/carga-grafo` contra uma instância no ar (`docker compose up -d` na raiz do panorama-graph): sai `0`, sem aviso.
+- `./install.sh --project <pasta temporária> --claude --agents`: a cópia tem `SKILL.md`, as referências e os schemas baixados dos adaptadores. Sem rede, `--schemas-dir` com a pasta `schemas/` de uma cópia local dos adaptadores.
+- `importar.sh --dry-run` sobre `exemplos/carga-grafo` contra uma instância no ar (`docker compose up -d` no panorama-graph, para a API, e nos adaptadores, para o receptor): sai `0`, sem aviso.
 - O init script num projeto Gradle sem o plugin, com e sem `-x test`, e o build do projeto sem nenhuma mudança fora de `build/`.
 - Mudança nas instruções de descoberta: rode a skill num serviço que já publica pelo plugin, forçando a leitura do código, e compare com o `build/architecture` do plugin (o gabarito): o que acertou, o que perdeu e o que inventou.
