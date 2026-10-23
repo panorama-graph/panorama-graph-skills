@@ -90,7 +90,7 @@ if [[ -d "$dir/organizacao" ]] && compgen -G "$dir/organizacao/*.yaml" >/dev/nul
     # shellcheck disable=SC2086
     $GRAPH_SEED "$dir/organizacao" "${args[@]}" || failed=1
   else
-    command -v docker >/dev/null || { echo "erro: sem docker; informe GRAPH_SEED (ex.: 'bun run --cwd <adapters> graph-seed')" >&2; exit 1; }
+    command -v docker >/dev/null || { echo "erro: sem docker; informe GRAPH_SEED (ex.: 'pnpm --dir <adapters> run graph-seed')" >&2; exit 1; }
     docker run --rm --network host -e GRAPH_API_URL -v "$dir/organizacao:/carga:ro" "$ADAPTERS_IMAGE" \
       graph-seed /carga "${args[@]}" || failed=1
   fi
