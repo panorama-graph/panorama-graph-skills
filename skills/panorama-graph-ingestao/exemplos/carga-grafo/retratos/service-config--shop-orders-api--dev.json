@@ -1,0 +1,58 @@
+{
+  "source": "service-config",
+  "scope": {
+    "component": "shop/orders-api",
+    "environment": "dev"
+  },
+  "observedAt": "2026-10-23T12:00:00Z",
+  "evidenceBase": "shop/orders-api@3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e:deploy/values-dev.yaml#",
+  "nodes": [
+    {
+      "key": "resource:dev/postgres/orders",
+      "type": "Resource",
+      "props": {
+        "kind": "database",
+        "name": "orders"
+      },
+      "evidence": "env.SPRING_DATASOURCE_URL"
+    }
+  ],
+  "relations": [
+    {
+      "type": "HOSTED_ON",
+      "from": "resource:dev/postgres/orders",
+      "to": "resource:dev/postgres",
+      "evidence": "env.SPRING_DATASOURCE_URL"
+    },
+    {
+      "type": "USES_RESOURCE",
+      "from": "component:shop/orders-api",
+      "to": "resource:dev/postgres/orders",
+      "props": {
+        "access": "read-write"
+      },
+      "evidence": "env.SPRING_DATASOURCE_URL"
+    },
+    {
+      "type": "USES_RESOURCE",
+      "from": "component:shop/orders-api",
+      "to": "resource:dev/kafka",
+      "props": {
+        "access": "read-write"
+      },
+      "evidence": "env.KAFKA_BOOTSTRAP_SERVERS"
+    },
+    {
+      "type": "HOSTED_ON",
+      "from": "topic:shop.orders.order-placed",
+      "to": "resource:dev/kafka",
+      "evidence": "env.KAFKA_BOOTSTRAP_SERVERS"
+    },
+    {
+      "type": "HOSTED_ON",
+      "from": "topic:shop.payments.payment-confirmed",
+      "to": "resource:dev/kafka",
+      "evidence": "env.KAFKA_BOOTSTRAP_SERVERS"
+    }
+  ]
+}

@@ -21,6 +21,10 @@
 #                     os schemas dos formatos de build (padrão: PANORAMA_ADAPTERS_REF ou main)
 #   --schemas-dir DIR copia os schemas de DIR (ex.: a pasta schemas/ de uma cópia local
 #                     dos adaptadores) em vez de baixar
+#   --product-ref REF tag, branch ou commit do repositório do produto de onde vêm os documentos
+#                     do modelo (padrão: PANORAMA_GRAPH_REF ou main)
+#   --product-dir DIR copia os documentos do modelo de DIR (a raiz de uma cópia local do
+#                     panorama-graph) em vez de baixar
 #   --uninstall       remove as skills indicadas dos formatos escolhidos
 #   --list            lista as skills disponíveis
 #   -h, --help        mostra esta ajuda
@@ -30,6 +34,8 @@
 #
 # As skills que usam os schemas dos formatos de build (SCHEMA_SKILLS) os recebem em
 # skills/<skill>/schemas/, baixados de github.com/panorama-graph/adapters (curl e tar).
+# As que ensinam o modelo (PRODUCT_SKILLS) recebem em skills/<skill>/produto/ os documentos do
+# modelo e da ingestão, baixados de github.com/panorama-graph/panorama-graph (curl).
 
 set -euo pipefail
 
@@ -37,6 +43,9 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS_DIR="$REPO_DIR/skills"
 ADAPTERS_REPO="https://codeload.github.com/panorama-graph/adapters/tar.gz"
 SCHEMA_SKILLS=(panorama-graph-carga-manual)
+PRODUCT_RAW="https://raw.githubusercontent.com/panorama-graph/panorama-graph"
+PRODUCT_SKILLS=(panorama-graph-ingestao)
+PRODUCT_FILES=(api/MODELO.md api/ADAPTADOR.md api/PROVENIENCIA.md sdks/key-recipes.json)
 
 claude=false
 agents=false
@@ -45,6 +54,8 @@ link=false
 uninstall=false
 schemas_ref="${PANORAMA_ADAPTERS_REF:-main}"
 schemas_dir=""
+product_ref="${PANORAMA_GRAPH_REF:-main}"
+product_dir=""
 skills=()
 
 usage() { sed -n '2,/^$/{s/^# \{0,1\}//;p}' "${BASH_SOURCE[0]}"; }
@@ -69,6 +80,12 @@ while [[ $# -gt 0 ]]; do
     --schemas-dir)
       [[ $# -ge 2 && -d "$2" ]] || { echo "erro: --schemas-dir precisa de um diretório que exista" >&2; exit 1; }
       schemas_dir="$(cd "$2" && pwd)"; shift ;;
+    --product-ref)
+      [[ $# -ge 2 ]] || { echo "erro: --product-ref precisa de uma ref" >&2; exit 1; }
+      product_ref="$2"; shift ;;
+    --product-dir)
+      [[ $# -ge 2 && -d "$2" ]] || { echo "erro: --product-dir precisa de um diretório que exista" >&2; exit 1; }
+      product_dir="$(cd "$2" && pwd)"; shift ;;
     --uninstall) uninstall=true ;;
     --list) available; exit 0 ;;
     -h|--help) usage; exit 0 ;;
@@ -165,7 +182,7 @@ fetch_schemas() {
       schemas_cache="$schemas_dir"
     else
       schemas_tmp="$(mktemp -d)"
-      trap 'rm -rf "$schemas_tmp"' EXIT
+      trap 'rm -rf "$schemas_tmp" "${product_cache:-}"' EXIT
       curl -fsSL "$ADAPTERS_REPO/$schemas_ref" | tar xz -C "$schemas_tmp" \
         || { echo "erro: não consegui baixar os schemas dos adaptadores ($schemas_ref); use --schemas-dir" >&2; exit 1; }
       schemas_cache="$(echo "$schemas_tmp"/*/schemas)"
@@ -178,6 +195,30 @@ fetch_schemas() {
   cp "$schemas_cache"/*.json "$dest/"
 }
 
+# Põe em skills/<skill>/produto/ os documentos do modelo, baixados uma vez por instalação.
+product_cache=""
+fetch_product() {
+  local s="$1" dest="$SKILLS_DIR/$1/produto" f
+  [[ " ${PRODUCT_SKILLS[*]} " == *" $s "* ]] || return 0
+  if [[ -z "$product_cache" ]]; then
+    product_cache="$(mktemp -d)"
+    trap 'rm -rf "${schemas_tmp:-}" "$product_cache"' EXIT
+    for f in "${PRODUCT_FILES[@]}"; do
+      if [[ -n "$product_dir" ]]; then
+        cp "$product_dir/$f" "$product_cache/" \
+          || { echo "erro: $product_dir não tem $f" >&2; exit 1; }
+      else
+        curl -fsSL "$PRODUCT_RAW/$product_ref/$f" -o "$product_cache/$(basename "$f")" \
+          || { echo "erro: não consegui baixar $f do panorama-graph ($product_ref); use --product-dir" >&2; exit 1; }
+      fi
+    done
+    [[ -n "$product_dir" ]] || echo "produto:  panorama-graph/panorama-graph@$product_ref"
+  fi
+  rm -rf "$dest"
+  mkdir -p "$dest"
+  cp "$product_cache"/* "$dest/"
+}
+
 for s in "${skills[@]}"; do
   if $uninstall; then
     for target in $($agents && echo "$agents_dest/$s") $($claude && echo "$claude_dest/$s"); do
@@ -187,6 +228,7 @@ for s in "${skills[@]}"; do
   fi
 
   fetch_schemas "$s"
+  fetch_product "$s"
   if $agents; then
     place "$s" "$agents_dest/$s"
     if $claude; then

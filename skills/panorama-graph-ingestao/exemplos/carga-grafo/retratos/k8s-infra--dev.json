@@ -1,0 +1,56 @@
+{
+  "source": "k8s-infra",
+  "scope": {
+    "cluster": "dev"
+  },
+  "observedAt": "2026-10-23T12:00:00Z",
+  "evidenceBase": "shop/orders-api@3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e:deploy/values-dev.yaml",
+  "nodes": [
+    {
+      "key": "env:dev",
+      "type": "Environment",
+      "props": {
+        "kind": "development",
+        "name": "dev"
+      }
+    },
+    {
+      "key": "resource:dev/postgres",
+      "type": "Resource",
+      "props": {
+        "kind": "database-server",
+        "name": "postgres"
+      }
+    },
+    {
+      "key": "resource:dev/kafka",
+      "type": "Resource",
+      "props": {
+        "kind": "broker",
+        "name": "kafka"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "type": "IN_ENVIRONMENT",
+      "from": "resource:dev/postgres",
+      "to": "env:dev"
+    },
+    {
+      "type": "IN_ENVIRONMENT",
+      "from": "resource:dev/kafka",
+      "to": "env:dev"
+    },
+    {
+      "type": "RUNS",
+      "from": "resource:dev/postgres",
+      "to": "tech:postgresql"
+    },
+    {
+      "type": "RUNS",
+      "from": "resource:dev/kafka",
+      "to": "tech:kafka"
+    }
+  ]
+}

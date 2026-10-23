@@ -1,0 +1,92 @@
+{
+  "source": "build-manifest",
+  "scope": {
+    "component": "shop/orders-api"
+  },
+  "observedAt": "2026-10-23T12:00:00Z",
+  "evidenceBase": "shop/orders-api@3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e:",
+  "revision": {
+    "component": "component:shop/orders-api",
+    "commit": "3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e",
+    "version": "1.4.0"
+  },
+  "nodes": [
+    {
+      "key": "component:shop/orders-api",
+      "type": "Component",
+      "props": {
+        "name": "orders-api",
+        "kind": "service"
+      },
+      "evidence": "pom.xml#L7"
+    },
+    {
+      "key": "repo:git.example.com/shop/orders-api",
+      "type": "Repository",
+      "props": {
+        "name": "shop/orders-api",
+        "url": "https://git.example.com/shop/orders-api.git"
+      },
+      "evidence": "pom.xml#L14"
+    },
+    {
+      "key": "tech:java",
+      "type": "Technology",
+      "props": {
+        "name": "java"
+      },
+      "evidence": "pom.xml#L18"
+    },
+    {
+      "key": "tech:maven",
+      "type": "Technology",
+      "props": {
+        "name": "maven"
+      },
+      "evidence": ".mvn/wrapper/maven-wrapper.properties#L1"
+    },
+    {
+      "key": "tech:spring-boot",
+      "type": "Technology",
+      "props": {
+        "name": "spring-boot"
+      },
+      "evidence": "pom.xml#L4"
+    }
+  ],
+  "relations": [
+    {
+      "type": "HOSTED_IN",
+      "from": "component:shop/orders-api",
+      "to": "repo:git.example.com/shop/orders-api",
+      "evidence": "pom.xml#L14"
+    },
+    {
+      "type": "BUILT_WITH",
+      "from": "component:shop/orders-api",
+      "to": "tech:java",
+      "props": {
+        "version": "21"
+      },
+      "evidence": "pom.xml#L18"
+    },
+    {
+      "type": "BUILT_WITH",
+      "from": "component:shop/orders-api",
+      "to": "tech:maven",
+      "props": {
+        "version": "3.9.9"
+      },
+      "evidence": ".mvn/wrapper/maven-wrapper.properties#L1"
+    },
+    {
+      "type": "BUILT_WITH",
+      "from": "component:shop/orders-api",
+      "to": "tech:spring-boot",
+      "props": {
+        "version": "3.4.8"
+      },
+      "evidence": "pom.xml#L4"
+    }
+  ]
+}

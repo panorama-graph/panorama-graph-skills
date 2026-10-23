@@ -1,0 +1,45 @@
+{
+  "source": "data-access",
+  "scope": {
+    "component": "shop/orders-api"
+  },
+  "observedAt": "2026-10-23T12:00:00Z",
+  "evidenceBase": "shop/orders-api@3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e:",
+  "revision": {
+    "component": "component:shop/orders-api",
+    "commit": "3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e",
+    "version": "1.4.0"
+  },
+  "nodes": [
+    {
+      "key": "dataset:shop/orders-api/orders",
+      "type": "Dataset",
+      "props": {
+        "name": "orders",
+        "kind": "table",
+        "store": "relational"
+      },
+      "evidence": "src/main/java/com/example/shop/orders/OrderEntity.java"
+    }
+  ],
+  "relations": [
+    {
+      "type": "OWNS_DATA",
+      "from": "component:shop/orders-api",
+      "to": "dataset:shop/orders-api/orders",
+      "evidence": "src/main/java/com/example/shop/orders/OrderEntity.java"
+    },
+    {
+      "type": "READS",
+      "from": "component:shop/orders-api",
+      "to": "dataset:shop/orders-api/orders",
+      "evidence": "src/main/java/com/example/shop/orders/OrderService.java#L38"
+    },
+    {
+      "type": "WRITES",
+      "from": "component:shop/orders-api",
+      "to": "dataset:shop/orders-api/orders",
+      "evidence": "src/main/java/com/example/shop/orders/OrderService.java#L38"
+    }
+  ]
+}

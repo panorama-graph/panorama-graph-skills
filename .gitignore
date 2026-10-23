@@ -1,2 +1,4 @@
 # Schemas dos formatos de build, baixados do repositório dos adaptadores pelo install.sh.
 skills/*/schemas/
+# Documentos do modelo, baixados do repositório do produto pelo install.sh.
+skills/*/produto/

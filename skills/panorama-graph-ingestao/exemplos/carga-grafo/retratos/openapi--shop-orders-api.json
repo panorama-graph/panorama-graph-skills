@@ -1,0 +1,68 @@
+{
+  "source": "openapi",
+  "scope": {
+    "component": "shop/orders-api"
+  },
+  "observedAt": "2026-10-23T12:00:00Z",
+  "evidenceBase": "shop/orders-api@3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e:",
+  "revision": {
+    "component": "component:shop/orders-api",
+    "commit": "3f2c9e1a7b5d4c3e2f1a0b9c8d7e6f5a4b3c2d1e",
+    "version": "1.4.0"
+  },
+  "nodes": [
+    {
+      "key": "api:orders-api/http",
+      "type": "Api",
+      "props": {
+        "name": "orders-api",
+        "kind": "http"
+      },
+      "evidence": "src/main/java/com/example/shop/orders/OrdersApplication.java"
+    },
+    {
+      "key": "endpoint:orders-api/POST /orders",
+      "type": "Endpoint",
+      "props": {
+        "method": "POST",
+        "path": "/orders",
+        "name": "POST /orders",
+        "operationId": "placeOrder",
+        "contract": "{\"format\":\"openapi-3\",\"requestBody\":{\"required\":true,\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/PlaceOrder\"}}}},\"responses\":{\"201\":{\"description\":\"Created\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Order\"}}}},\"400\":{\"description\":\"Bad Request\"}},\"components\":{\"schemas\":{\"Order\":{\"type\":\"object\",\"required\":[\"id\",\"items\"],\"properties\":{\"id\":{\"type\":\"string\",\"format\":\"uuid\"},\"status\":{\"type\":\"string\",\"enum\":[\"PLACED\",\"PAID\",\"CANCELLED\"]},\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/OrderItem\"}}}},\"OrderItem\":{\"type\":\"object\",\"required\":[\"productId\",\"quantity\"],\"properties\":{\"productId\":{\"type\":\"string\"},\"quantity\":{\"type\":\"integer\",\"minimum\":1}}},\"PlaceOrder\":{\"type\":\"object\",\"required\":[\"items\"],\"properties\":{\"items\":{\"type\":\"array\",\"minItems\":1,\"items\":{\"$ref\":\"#/components/schemas/OrderItem\"}}}}}}}"
+      },
+      "evidence": "src/main/java/com/example/shop/orders/OrderController.java#L31"
+    },
+    {
+      "key": "endpoint:orders-api/GET /orders/{}",
+      "type": "Endpoint",
+      "props": {
+        "method": "GET",
+        "path": "/orders/{id}",
+        "name": "GET /orders/{id}",
+        "operationId": "getOrder",
+        "contract": "{\"format\":\"openapi-3\",\"parameters\":[{\"name\":\"id\",\"in\":\"path\",\"required\":true,\"schema\":{\"type\":\"string\",\"format\":\"uuid\"}}],\"responses\":{\"200\":{\"description\":\"OK\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Order\"}}}},\"404\":{\"description\":\"Not Found\"}},\"components\":{\"schemas\":{\"Order\":{\"type\":\"object\",\"required\":[\"id\",\"items\"],\"properties\":{\"id\":{\"type\":\"string\",\"format\":\"uuid\"},\"status\":{\"type\":\"string\",\"enum\":[\"PLACED\",\"PAID\",\"CANCELLED\"]},\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/OrderItem\"}}}},\"OrderItem\":{\"type\":\"object\",\"required\":[\"productId\",\"quantity\"],\"properties\":{\"productId\":{\"type\":\"string\"},\"quantity\":{\"type\":\"integer\",\"minimum\":1}}}}}}"
+      },
+      "evidence": "src/main/java/com/example/shop/orders/OrderController.java#L42"
+    }
+  ],
+  "relations": [
+    {
+      "type": "PROVIDES",
+      "from": "component:shop/orders-api",
+      "to": "api:orders-api/http",
+      "evidence": "src/main/java/com/example/shop/orders/OrdersApplication.java"
+    },
+    {
+      "type": "HAS_ENDPOINT",
+      "from": "api:orders-api/http",
+      "to": "endpoint:orders-api/POST /orders",
+      "evidence": "src/main/java/com/example/shop/orders/OrderController.java#L31"
+    },
+    {
+      "type": "HAS_ENDPOINT",
+      "from": "api:orders-api/http",
+      "to": "endpoint:orders-api/GET /orders/{}",
+      "evidence": "src/main/java/com/example/shop/orders/OrderController.java#L42"
+    }
+  ]
+}
