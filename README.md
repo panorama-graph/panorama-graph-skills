@@ -1,4 +1,4 @@
-# skills
+# panorama-graph-skills
 
 Skills para agentes de IA (Claude Code, Copilot no VS Code e outros que leem o formato aberto de Agent Skills) que trabalham com o panorama-graph. Cada skill fica numa pasta em [skills/](skills/), com um `SKILL.md` e os arquivos de apoio.
 
@@ -14,7 +14,7 @@ As duas são para experimentar o grafo. Ela é um retrato do commit lido e não 
 ## Instalação
 
 ```bash
-git clone https://github.com/panorama-graph/skills.git && cd skills
+git clone https://github.com/panorama-graph/panorama-graph-skills.git && cd panorama-graph-skills
 ./install.sh                          # todas as skills; pergunta para quais formatos
 ./install.sh --project ~/meu-repo     # no repositório, para o time inteiro
 ./install.sh --link --claude          # link para esta pasta: um git pull já atualiza a skill
@@ -29,7 +29,7 @@ Com os dois, a skill é copiada para `~/.agents/skills` e `~/.claude/skills/<ski
 
 A skill de ingestão traz os documentos do modelo do [panorama-graph](https://github.com/panorama-graph/panorama-graph): `MODELO.md`, `ADAPTADOR.md`, `PROVENIENCIA.md` e os casos das receitas de chave. O instalador os baixa (com `curl`) para `skills/<skill>/produto/`. `--product-ref <tag>` fixa a versão, e `--product-dir <pasta>` copia de uma cópia local do produto.
 
-A skill de carga manual usa os schemas dos formatos de build, que são do [repositório dos adaptadores](https://github.com/panorama-graph/adapters/tree/main/schemas): o instalador os baixa (com `curl` e `tar`) para `skills/<skill>/schemas/` e os leva junto na cópia. Por padrão vêm do `main`; `--schemas-ref <tag>` fixa uma versão, e `--schemas-dir <pasta>` copia de uma cópia local dos adaptadores, sem rede. No Windows, rode o instalador pelo Git Bash.
+A skill de carga manual usa os schemas dos formatos de build, que são do [repositório dos adaptadores](https://github.com/panorama-graph/panorama-graph-adapters/tree/main/schemas): o instalador os baixa (com `curl` e `tar`) para `skills/<skill>/schemas/` e os leva junto na cópia. Por padrão vêm do `main`; `--schemas-ref <tag>` fixa uma versão, e `--schemas-dir <pasta>` copia de uma cópia local dos adaptadores, sem rede. No Windows, rode o instalador pelo Git Bash.
 
 ## Uso
 

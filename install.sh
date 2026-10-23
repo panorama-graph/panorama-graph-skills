@@ -33,7 +33,7 @@
 # vira um link para ela, para existir uma cópia só.
 #
 # As skills que usam os schemas dos formatos de build (SCHEMA_SKILLS) os recebem em
-# skills/<skill>/schemas/, baixados de github.com/panorama-graph/adapters (curl e tar).
+# skills/<skill>/schemas/, baixados de github.com/panorama-graph/panorama-graph-adapters (curl e tar).
 # As que ensinam o modelo (PRODUCT_SKILLS) recebem em skills/<skill>/produto/ os documentos do
 # modelo e da ingestão, baixados de github.com/panorama-graph/panorama-graph (curl).
 
@@ -41,7 +41,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS_DIR="$REPO_DIR/skills"
-ADAPTERS_REPO="https://codeload.github.com/panorama-graph/adapters/tar.gz"
+ADAPTERS_REPO="https://codeload.github.com/panorama-graph/panorama-graph-adapters/tar.gz"
 SCHEMA_SKILLS=(panorama-graph-carga-manual)
 PRODUCT_RAW="https://raw.githubusercontent.com/panorama-graph/panorama-graph"
 PRODUCT_SKILLS=(panorama-graph-ingestao)
@@ -187,7 +187,7 @@ fetch_schemas() {
         || { echo "erro: não consegui baixar os schemas dos adaptadores ($schemas_ref); use --schemas-dir" >&2; exit 1; }
       schemas_cache="$(echo "$schemas_tmp"/*/schemas)"
       [[ -d "$schemas_cache" ]] || { echo "erro: $schemas_ref não tem a pasta schemas/" >&2; exit 1; }
-      echo "schemas:  panorama-graph/adapters@$schemas_ref"
+      echo "schemas:  panorama-graph/panorama-graph-adapters@$schemas_ref"
     fi
   fi
   rm -rf "$dest"

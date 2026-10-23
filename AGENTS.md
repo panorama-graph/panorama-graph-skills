@@ -1,10 +1,10 @@
-# skills — Guia para agentes
+# panorama-graph-skills — Guia para agentes
 
 Este arquivo diz **como trabalhar** no repositório. **O que cada skill faz** está no [README.md](README.md).
 
 ## Regras
 
-- **A skill segue o produto, e não o contrário.** A ingestão ensina o modelo pelos documentos do [panorama-graph](https://github.com/panorama-graph/panorama-graph) (`MODELO.md`, `ADAPTADOR.md`, `PROVENIENCIA.md`, `key-recipes.json`). A carga manual usa o formato dos schemas em `schemas/` do [adapters](https://github.com/panorama-graph/adapters) e as regras de tradução do `graph-publish`. Os dois conjuntos são baixados pelo `install.sh` na instalação, e nunca copiados para cá. Mudou o modelo, um formato, um tradutor, uma receita de chave ou a versão do plugin? Atualize as referências das skills e os exemplos em seguida (e, na carga manual, o init script).
+- **A skill segue o produto, e não o contrário.** A ingestão ensina o modelo pelos documentos do [panorama-graph](https://github.com/panorama-graph/panorama-graph) (`MODELO.md`, `ADAPTADOR.md`, `PROVENIENCIA.md`, `key-recipes.json`). A carga manual usa o formato dos schemas em `schemas/` do [panorama-graph-adapters](https://github.com/panorama-graph/panorama-graph-adapters) e as regras de tradução do `graph-publish`. Os dois conjuntos são baixados pelo `install.sh` na instalação, e nunca copiados para cá. Mudou o modelo, um formato, um tradutor, uma receita de chave ou a versão do plugin? Atualize as referências das skills e os exemplos em seguida (e, na carga manual, o init script).
 - **Fontes e escopos dos adaptadores.** Na ingestão, os fatos de um componente lidos do código vão repartidos pelas fontes de build, como o `graph-publish` reparte (`build-manifest`, `openapi`, `asyncapi`, `http-clients`, `data-access`, `sbom`, `pact`). Mudou o que um tradutor afirma em cada fonte? Atualize a tabela de [retratos.md](skills/panorama-graph-ingestao/referencias/retratos.md#repartir-os-fatos-pelas-fontes) e o exemplo.
 - **Descoberta nas duas skills.** Onde procurar cada fato no código está nas duas: em [descoberta.md da ingestão](skills/panorama-graph-ingestao/referencias/descoberta.md), em nós e relações; em [descoberta.md da carga manual](skills/panorama-graph-carga-manual/referencias/descoberta.md), nos campos dos artefatos. Instrução nova de descoberta entra nas duas.
 - **Mesmas fontes e escopos dos adaptadores reais.** A carga gerada pela skill nunca usa fonte `manual`, `seed` ou `agente`: ela precisa ser substituída, sem limpeza, pelo primeiro envio do adaptador do mesmo assunto.
